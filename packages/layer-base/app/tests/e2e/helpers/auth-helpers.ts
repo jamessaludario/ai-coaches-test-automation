@@ -1,0 +1,68 @@
+import type { Page } from 'playwright'
+import type { UserCredentials } from '../constants'
+import type { LoginPage } from '../page-objects/login-page'
+import type { NuxtGoto } from './navigation-helpers'
+import { accountMenuContent, adminBaseUrl, loginRoutes, testUsers } from '../constants'
+import { escapeRegExp } from '../utils'
+
+export async function loginUser(
+  goto: NuxtGoto,
+  loginPage: LoginPage,
+  email: string = testUsers.client.email,
+  password: string = testUsers.client.password,
+) {
+  await loginPage.login(goto, email, password, loginRoutes.home)
+  await loginPage.waitForRedirect(loginRoutes.home)
+}
+
+export async function loginAsCoach(
+  goto: NuxtGoto,
+  loginPage: LoginPage,
+  email: string = testUsers.coach.email,
+  password: string = testUsers.coach.password,
+) {
+  await loginPage.login(goto, email, password, loginRoutes.redirectToCoachDashboard)
+  await loginPage.waitForRedirect(loginRoutes.redirectToCoachDashboard)
+}
+
+export async function loginAsClient(
+  goto: NuxtGoto,
+  loginPage: LoginPage,
+  email: string = testUsers.client.email,
+  password: string = testUsers.client.password,
+) {
+  await loginPage.login(goto, email, password, loginRoutes.redirectToClientDashboard)
+  await loginPage.waitForRedirect(loginRoutes.redirectToClientDashboard)
+}
+
+export async function loginAsAdmin(
+  goto: NuxtGoto,
+  loginPage: LoginPage,
+  email: string = testUsers.admin.email,
+  password: string = testUsers.admin.password,
+) {
+  await loginPage.login(goto, email, password, loginRoutes.home, adminBaseUrl)
+  await loginPage.waitForRedirect(loginRoutes.home, undefined, adminBaseUrl)
+}
+
+export async function loginAndExpectOnboarding(
+  goto: NuxtGoto,
+  loginPage: LoginPage,
+  email: string = testUsers.client.email,
+  password: string = testUsers.client.password,
+) {
+  await loginPage.login(goto, email, password, loginRoutes.onboarding)
+  await loginPage.waitForRedirect(loginRoutes.onboarding)
+}
+
+export async function logout(page: Page, user: UserCredentials) {
+  if (!user.fullName) {
+    throw new Error('User fullName is required for logout')
+  }
+  const escapedName = escapeRegExp(user.fullName)
+  const userProfileButton = page.getByRole('button', { name: new RegExp(escapedName, 'i') }).first()
+  await userProfileButton.click()
+  await page.getByRole('menuitem', { name: accountMenuContent.switchAccount }).click()
+  await page.getByRole('menuitem', { name: accountMenuContent.logout }).click()
+  await page.waitForURL(user.role === 'admin' ? adminBaseUrl + loginRoutes.login : loginRoutes.login, { timeout: 10000 })
+}

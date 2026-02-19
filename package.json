@@ -1,0 +1,23 @@
+{
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "PLAYWRIGHT_HEADLESS=false playwright test",
+    "test:debug": "playwright test --debug",
+    "test:web": "playwright test --project=web-client --project=web-coach --project=web-marketing",
+    "test:web-client": "playwright test --project=web-client",
+    "test:web-coach": "playwright test --project=web-coach",
+    "test:web-marketing": "playwright test --project=web-marketing",
+    "test:admin": "playwright test --project=admin",
+    "test:lifecycles": "playwright test --project=lifecycles",
+    "test:list": "playwright test --list"
+  },
+  "devDependencies": {
+    "@nuxt/test-utils": "^3.15.1",
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.3.0",
+    "dotenv": "^16.6.1",
+    "playwright": "^1.58.2"
+  }
+}

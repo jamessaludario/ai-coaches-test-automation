@@ -1,0 +1,11 @@
+{
+  "extends": "../../../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@e2e-admin/*": ["./*"],
+      "@layer-base/e2e/*": ["../../../../packages/layer-base/app/tests/e2e/*"]
+    }
+  },
+  "include": ["**/*"]
+}
