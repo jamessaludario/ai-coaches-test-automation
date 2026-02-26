@@ -3,9 +3,19 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@e2e-web/*": ["./*"],
-      "@layer-base/e2e/*": ["../../../../packages/layer-base/app/tests/e2e/*"]
-    }
+      "@e2e-web/*": [
+        "./*"
+      ],
+      "@layer-base/e2e/*": [
+        "../../../../packages/layer-base/app/tests/e2e/*"
+      ]
+    },
+    "lib": [
+      "ES2022",
+      "DOM"
+    ]
   },
-  "include": ["**/*"]
+  "include": [
+    "**/*"
+  ]
 }

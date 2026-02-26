@@ -1,5 +1,5 @@
 import type { Locator, Page } from 'playwright'
-import { workshopDateFilters } from '../constants'
+import { timeouts, workshopDateFilters } from '../constants'
 import { escapeRegExp } from '../utils'
 import { getVisibleCards, hasNoWorkshopsFound, waitForCardsToRefresh } from './card-helpers'
 
@@ -142,7 +142,7 @@ export async function processCards(
   }
 
   // Wait for cards to be visible instead of arbitrary timeout
-  await page.locator('.card.relative').first().waitFor({ state: 'visible', timeout: 5000 })
+  await page.locator('.card.relative').first().waitFor({ state: 'visible', timeout: timeouts.ui.elementVisible })
 
   if (await hasNoWorkshopsFound(page)) {
     return

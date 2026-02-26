@@ -1,6 +1,6 @@
 import { timeouts } from '../../constants'
 import { nuxtGoto } from '../../helpers'
-import { BasePage } from '../../page-objects'
+import { BasePage } from '@layer-base/e2e/page-objects'
 
 /**
  * Coach Workshop Schedule Page Object
@@ -65,6 +65,18 @@ export class CoachWorkshopSchedulePage extends BasePage {
     return this.page.getByRole('textbox', { name: /search/i }).first()
   }
 
+  get scheduleDialogHeading() {
+    return this.page.getByRole('heading', { name: /schedule|new event|edit workshop schedule/i })
+  }
+
+  get scheduleSubmitButton() {
+    return this.page.getByRole('button', { name: /schedule|create|save|update/i })
+  }
+
+  get scheduleDialogError() {
+    return this.page.locator('[role="alert"]').filter({ hasText: /date|past|future/i })
+  }
+
   async gotoSchedulesList() {
     await nuxtGoto(this.page, '/c/workshop-schedules')
   }
@@ -76,12 +88,12 @@ export class CoachWorkshopSchedulePage extends BasePage {
 
   async navigateToBookings() {
     await this.bookingsTab.click()
-    await this.page.waitForURL(/\/bookings$/, { timeout: 10000 })
+    await this.page.waitForURL(/\/bookings$/, { timeout: timeouts.page.navigation })
   }
 
   async navigateToResources() {
     await this.resourcesTab.click()
-    await this.page.waitForURL(/\/resources$/, { timeout: 10000 })
+    await this.page.waitForURL(/\/resources$/, { timeout: timeouts.page.navigation })
   }
 
   async searchSchedules(query: string, expectedResults = true) {
@@ -91,5 +103,21 @@ export class CoachWorkshopSchedulePage extends BasePage {
       await this.page.getByRole('table').locator('tbody tr').first().waitFor({ state: 'visible', timeout: timeouts.ui.elementVisible })
     else
       await this.page.waitForTimeout(timeouts.wait.short)
+  }
+
+  async isScheduleSubmitEnabled() {
+    return await this.scheduleSubmitButton.isEnabled().catch(() => false)
+  }
+
+  async submitSchedule() {
+    await this.scheduleSubmitButton.click()
+  }
+
+  async isScheduleErrorVisible() {
+    return await this.scheduleDialogError.isVisible().catch(() => false)
+  }
+
+  async isScheduleDialogOpen() {
+    return await this.scheduleDialogHeading.isVisible().catch(() => false)
   }
 }

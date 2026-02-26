@@ -1,3 +1,4 @@
+import type { UserCredentials } from '../constants'
 import { coachProfileLifecycleConstants, timeouts } from '../constants'
 import { test } from '../fixtures'
 import {
@@ -18,41 +19,24 @@ import { generateUserTestData, getTimestamp } from '../utils'
 test.describe('Complete Coach Profile Lifecycle', () => {
   test.setTimeout(timeouts.workflow.fullWorkflow)
 
-  // Shared test data
-  let clientEmail: string
-  let clientPassword: string
-  let clientUsername: string
-  let clientFirstName: string
-  let clientLastName: string
-  let coachEmail: string
-  let coachPassword: string
-  let coachUsername: string
-  let coachFirstName: string
-  let coachLastName: string
+  // Shared test data containers
+  let clientData: UserCredentials
+  let coachData: UserCredentials
+  let clientPassword!: string
+  let coachPassword!: string
 
   test('phase 1-6: Complete coach profile setup and verification workflow', async ({ page, browser }) => {
     const timestamp = getTimestamp()
 
     // Generate unique user data
-    const clientData = generateUserTestData('client', timestamp)
-    const coachData = generateUserTestData('coach', timestamp)
+    clientData = generateUserTestData('client', timestamp)
+    coachData = generateUserTestData('coach', timestamp)
 
     // ==================== PHASE 1: USER GENERATION (ADMIN) ====================
     await test.step('Phase 1: Admin creates client and coach users', async () => {
       const passwords = await adminCreatesAndVerifiesUsers(page, [clientData, coachData])
       clientPassword = passwords[0]!
       coachPassword = passwords[1]!
-
-      // Extract user data for later use
-      clientEmail = clientData.email
-      clientUsername = clientData.username
-      clientFirstName = clientData.firstName
-      clientLastName = clientData.lastName
-      coachEmail = coachData.email
-      coachUsername = coachData.username
-      coachFirstName = coachData.firstName
-      coachLastName = coachData.lastName
-
       await page.close()
     })
 
@@ -63,12 +47,12 @@ test.describe('Complete Coach Profile Lifecycle', () => {
 
       await completeUserOnboarding(
         coachPage,
-        coachEmail,
+        coachData.email,
         coachPassword,
         {
-          username: coachUsername,
-          firstName: coachFirstName,
-          lastName: coachLastName,
+          username: coachData.username,
+          firstName: coachData.firstName,
+          lastName: coachData.lastName,
           phoneNumber: '+639987654321',
         },
         coachProfileLifecycleConstants.routes.clientDashboard,
@@ -85,12 +69,12 @@ test.describe('Complete Coach Profile Lifecycle', () => {
 
       await completeUserOnboarding(
         clientPage,
-        clientEmail,
+        clientData.email,
         clientPassword,
         {
-          username: clientUsername,
-          firstName: clientFirstName,
-          lastName: clientLastName,
+          username: clientData.username,
+          firstName: clientData.firstName,
+          lastName: clientData.lastName,
           phoneNumber: '+639123456789',
         },
         coachProfileLifecycleConstants.routes.clientDashboard,
@@ -108,7 +92,7 @@ test.describe('Complete Coach Profile Lifecycle', () => {
       const adminContext = await browser.newContext()
       const adminPage = await adminContext.newPage()
 
-      await approveCoachProfile(adminPage, coachEmail, true)
+      await approveCoachProfile(adminPage, coachData.email, true)
 
       await adminPage.close()
       await adminContext.close()
@@ -121,7 +105,7 @@ test.describe('Complete Coach Profile Lifecycle', () => {
 
       await coachCompletesProfileConfiguration(
         coachPage,
-        coachEmail,
+        coachData.email,
         coachPassword,
         coachProfileLifecycleConstants.sampleData,
         coachProfileLifecycleConstants.profile.sections,
@@ -139,7 +123,7 @@ test.describe('Complete Coach Profile Lifecycle', () => {
 
       await clientVerifiesCoachProfile(
         clientPage,
-        clientEmail,
+        clientData.email,
         clientPassword,
         coachData,
         {

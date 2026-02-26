@@ -1,4 +1,4 @@
-import type { Page } from 'playwright'
+import { BasePage } from '@layer-base/e2e/page-objects'
 import { dashboardContent, userRoutes } from '../../constants'
 import { nuxtGoto } from '../../helpers'
 
@@ -10,8 +10,7 @@ const NAVIGATION_TIMEOUT = 10000
  * Handles coach dashboard interactions.
  * For assertions, use helpers from `helpers/coach-assertions.ts`
  */
-export class CoachDashboardPage {
-  constructor(private readonly page: Page) {}
+export class CoachDashboardPage extends BasePage {
 
   get dashboardHeading() {
     return this.page.getByRole('heading', { name: dashboardContent.coach.heading })

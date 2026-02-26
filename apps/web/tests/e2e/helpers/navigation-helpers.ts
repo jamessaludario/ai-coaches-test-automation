@@ -2,7 +2,6 @@ import type { UserCredentials } from '@layer-base/e2e/constants'
 import type { NuxtGoto } from '@layer-base/e2e/helpers'
 import type { Page } from 'playwright'
 import { testUsers, timeouts } from '@layer-base/e2e/constants'
-import { scrollToSection, scrollToText } from '@layer-base/e2e/helpers'
 import { escapeRegExp } from '@layer-base/e2e/utils'
 import { expect } from '@nuxt/test-utils/playwright'
 import {
@@ -95,5 +94,3 @@ export async function navigateToCoachProfile(page: Page, coach: UserCredentials 
   }
 }
 
-// Re-export shared scroll functions for convenience
-export { scrollToSection, scrollToText }

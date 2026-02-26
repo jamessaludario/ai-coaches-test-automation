@@ -106,7 +106,7 @@ export async function approveCoachProfile(
   const row = page.getByRole('row').filter({ hasText: coachEmail }).first()
   await row.getByLabel('i-lucide-ellipsis').click()
   await page.getByRole('menuitem', { name: /manage/i }).click()
-  await page.waitForURL(/\/users\/.*/, { timeout: 10000 })
+  await page.waitForURL(/\/users\/.*/, { timeout: timeouts.page.navigation })
 
   await clickTab(page, sharedAdminSelectors.users.tabs.coachProfile)
 

@@ -3,11 +3,25 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@lifecycles/*": ["./*"],
-      "@layer-base/e2e/*": ["../e2e/*"],
-      "@e2e-admin/*": ["../../../../../apps/admin/tests/e2e/*"],
-      "@e2e-web/*": ["../../../../../apps/web/tests/e2e/*"]
-    }
+      "@lifecycles/*": [
+        "./*"
+      ],
+      "@layer-base/e2e/*": [
+        "../e2e/*"
+      ],
+      "@e2e-admin/*": [
+        "../../../../../apps/admin/tests/e2e/*"
+      ],
+      "@e2e-web/*": [
+        "../../../../../apps/web/tests/e2e/*"
+      ]
+    },
+    "lib": [
+      "ES2022",
+      "DOM"
+    ]
   },
-  "include": ["**/*"]
+  "include": [
+    "**/*"
+  ]
 }

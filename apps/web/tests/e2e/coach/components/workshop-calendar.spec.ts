@@ -9,7 +9,7 @@ import {
   openWorkshop,
   updateAndConfirmSchedule,
 } from '../../helpers'
-import { CoachDashboardPage } from '../../page-objects'
+import { CoachDashboardPage, CoachWorkshopSchedulePage } from '../../page-objects'
 import { addDays, getFutureDate, getPastDate, setTime } from '../../utils'
 
 /**
@@ -21,9 +21,11 @@ import { addDays, getFutureDate, getPastDate, setTime } from '../../utils'
 test.describe('Workshop Calendar Component', () => {
   test.setTimeout(timeouts.workflow.extended)
   let dashboard: CoachDashboardPage
+  let schedulePage: CoachWorkshopSchedulePage
 
   test.beforeEach(async ({ authenticatedCoachPage }) => {
     dashboard = new CoachDashboardPage(authenticatedCoachPage)
+    schedulePage = new CoachWorkshopSchedulePage(authenticatedCoachPage)
     await dashboard.goto()
     await dashboard.navigateToWorkshops()
     await openWorkshop(authenticatedCoachPage, defaultWorkshop.name)
@@ -56,19 +58,18 @@ test.describe('Workshop Calendar Component', () => {
         mode: 'Online',
       })
 
-      const scheduleButton = authenticatedCoachPage.getByRole('button', { name: /schedule|create|save/i })
-      const isEnabled = await scheduleButton.isEnabled().catch(() => false)
+      const isEnabled = await schedulePage.isScheduleSubmitEnabled()
 
       if (isEnabled) {
-        await scheduleButton.click()
+        await schedulePage.submitSchedule()
 
-        const hasError = await authenticatedCoachPage.locator('[role="alert"]').filter({ hasText: /date|past|future/i }).isVisible().catch(() => false)
-        const dialogOpen = await authenticatedCoachPage.getByRole('heading', { name: /schedule|new event/i }).isVisible().catch(() => false)
+        const hasError = await schedulePage.isScheduleErrorVisible()
+        const dialogOpen = await schedulePage.isScheduleDialogOpen()
 
         expect(hasError || dialogOpen).toBe(true)
       }
       else {
-        await expect(scheduleButton).toBeDisabled()
+        await expect(schedulePage.scheduleSubmitButton).toBeDisabled()
       }
     })
 
@@ -91,12 +92,11 @@ test.describe('Workshop Calendar Component', () => {
         mode: 'Online',
       })
 
-      const scheduleButton = authenticatedCoachPage.getByRole('button', { name: /schedule|create|save/i })
+      const scheduleButton = schedulePage.scheduleSubmitButton
       await expect(scheduleButton).toBeEnabled()
-      await scheduleButton.click()
+      await schedulePage.submitSchedule()
 
-      const dialogHeading = authenticatedCoachPage.getByRole('heading', { name: /schedule|new event/i })
-      await expect(dialogHeading).toBeHidden({ timeout: 10000 })
+      await expect(schedulePage.scheduleDialogHeading).toBeHidden({ timeout: timeouts.ui.elementVisible })
 
       await expectToastMessage(authenticatedCoachPage, /schedule created/i)
 
@@ -108,7 +108,7 @@ test.describe('Workshop Calendar Component', () => {
         const targetDay = startDateTime.toLocaleDateString()
         throw new Error(`Schedule for ${targetDay} not found in the calendar`)
       }
-      await expect(newSchedule.element).toBeVisible({ timeout: 10000 })
+      await expect(newSchedule.element).toBeVisible({ timeout: timeouts.ui.elementVisible })
     })
 
     test('update schedule date and time', async ({ authenticatedCoachPage }) => {
@@ -126,7 +126,7 @@ test.describe('Workshop Calendar Component', () => {
       await scheduleResult.element?.click()
 
       await authenticatedCoachPage.getByRole('heading', { name: 'Edit Workshop Schedule' })
-        .waitFor({ state: 'visible', timeout: 5000 })
+        .waitFor({ state: 'visible', timeout: timeouts.ui.modalOpen })
 
       const newStartDate = scheduleResult.reference?.date ? addDays(scheduleResult.reference.date, 14) : addDays(new Date(), 14)
       const newStartDateTime = setTime(newStartDate, 14, 30)
@@ -140,8 +140,7 @@ test.describe('Workshop Calendar Component', () => {
       })
 
       await updateAndConfirmSchedule(authenticatedCoachPage)
-      await authenticatedCoachPage.getByRole('heading', { name: 'Edit Workshop Schedule' })
-        .waitFor({ state: 'hidden', timeout: 5000 })
+      await expect(schedulePage.scheduleDialogHeading).toBeHidden({ timeout: timeouts.ui.modalOpen })
 
       await authenticatedCoachPage.reload({ waitUntil: 'networkidle' })
       await navigateToCalendarTab(authenticatedCoachPage)
@@ -152,7 +151,7 @@ test.describe('Workshop Calendar Component', () => {
       if (!updatedSchedule.element) {
         throw new Error(`Updated schedule for ${newStartDateTime.toLocaleDateString()} not found`)
       }
-      await expect(updatedSchedule.element).toBeVisible({ timeout: 10000 })
+      await expect(updatedSchedule.element).toBeVisible({ timeout: timeouts.ui.elementVisible })
     })
   })
 })

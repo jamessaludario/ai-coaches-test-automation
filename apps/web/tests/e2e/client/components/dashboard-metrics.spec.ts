@@ -23,7 +23,7 @@ test.describe('Client Dashboard Metrics', () => {
     const metricsValues = await dashboard.metricsValues
     expect(metricsValues.length).toBeGreaterThan(0)
     for (const metricValue of metricsValues) {
-      await expect(metricValue).toHaveText(/^\$?\s*\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?$/, { timeout: 10000 })
+      await expect(metricValue).toHaveText(/^\$?\s*\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?$/, { timeout: timeouts.ui.elementVisible })
     }
   })
 })

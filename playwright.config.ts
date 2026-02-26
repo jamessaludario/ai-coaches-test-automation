@@ -6,67 +6,69 @@ import { fileURLToPath } from 'node:url'
 
 const rootDir = dirname(fileURLToPath(import.meta.url))
 
-/**
- * Determine which project is being run based on CLI arguments
- */
-function getRunningProject(): 'admin' | 'web' {
-  const args = process.argv
-  for (let i = 0; i < args.length; i++) {
-    // Match --project=admin or --project admin
-    if (args[i] === '--project' && args[i + 1]?.toLowerCase() === 'admin') {
-      return 'admin'
-    }
-    if (args[i].startsWith('--project=') && args[i].toLowerCase().includes('=admin')) {
-      return 'admin'
-    }
-  }
-  return 'web'
-}
-// Load the appropriate env file once at config time
-const runningProject = getRunningProject()
-const envPath = runningProject === 'admin'
-  ? resolve(rootDir, 'apps/admin/.env')
-  : resolve(rootDir, 'apps/web/.env')
+// -------------------------------------
+// Detect running project (simplified)
+// -------------------------------------
+const projectArg =
+  process.argv.find(a => a.startsWith('--project='))?.split('=')[1] ||
+  process.argv[process.argv.indexOf('--project') + 1]
 
-// Load the correct env and lock it
-loadDotenv({ path: envPath, override: false })
+const runningProject =
+  projectArg === 'admin' || projectArg === 'lifecycles'
+    ? projectArg
+    : 'web'
 
-// Prevent @nuxt/test-utils from loading wrong env by setting a marker
+// -------------------------------------
+// Load correct env once
+// -------------------------------------
+loadDotenv({
+  path: resolve(rootDir, `apps/${runningProject}/.env`),
+  override: false,
+})
+
 process.env.__PLAYWRIGHT_ENV_LOADED__ = runningProject
 
-/**
- * Create Nuxt config per Playwright project
- */
-function createNuxtConfig(project: 'web' | 'admin') {
-  const baseURL = project === 'admin'
-    ? process.env.NUXT_PUBLIC_ADMIN_BASE || ''
-    : process.env.NUXT_PUBLIC_WEB_BASE || ''
+// -------------------------------------
+// Shared helpers
+// -------------------------------------
+const getBaseURL = (project: 'web' | 'admin') =>
+  process.env[
+  project === 'admin'
+    ? 'NUXT_PUBLIC_ADMIN_BASE'
+    : 'NUXT_PUBLIC_WEB_BASE'
+  ] || ''
 
-  return {
-    rootDir: resolve(rootDir, `apps/${project}`),
-    server: false,
-    build: false,
-    loadDotenv: false, // CRITICAL: Prevent Nuxt from loading any .env files
-    dotenv: false, // Extra safeguard
-    // Set baseURL for test context
-    ...(baseURL && { host: baseURL }),
-  }
-}
-
-/**
- * Get base URL for Playwright project
- */
-function getBaseURL(project: 'web' | 'admin'): string {
-  const envar = project === 'admin' ? 'NUXT_PUBLIC_ADMIN_BASE' : 'NUXT_PUBLIC_WEB_BASE'
-  const url = process.env[envar]
-  if (!url) {
-    console.warn(`Warning: ${envar} is not set. Test may fail.`)
-  }
-  return url || ''
-}
+const createNuxtConfig = (project: 'web' | 'admin' | 'lifecycles') => ({
+  rootDir: resolve(rootDir, `apps/${project}`),
+  server: false,
+  build: false,
+  loadDotenv: false,
+  dotenv: false,
+  ...(getBaseURL(project === 'admin' ? 'admin' : 'web') && {
+    host: getBaseURL(project === 'admin' ? 'admin' : 'web'),
+  }),
+})
 
 const headless = process.env.PLAYWRIGHT_HEADLESS !== 'false'
 
+// -------------------------------------
+// Project definitions (no repetition)
+// -------------------------------------
+const projectConfigs = [
+  { name: 'web-client', dir: 'apps/web/tests/e2e/client', app: 'web' },
+  { name: 'web-coach', dir: 'apps/web/tests/e2e/coach', app: 'web' },
+  { name: 'web-marketing', dir: 'apps/web/tests/e2e/marketing', app: 'web' },
+  { name: 'admin', dir: 'apps/admin/tests/e2e', app: 'admin' },
+  {
+    name: 'lifecycles',
+    dir: 'packages/layer-base/app/tests/lifecycles/workflows',
+    app: 'lifecycles',
+  },
+]
+
+// -------------------------------------
+// Final config
+// -------------------------------------
 export default defineConfig({
   testDir: '.',
   testMatch: '**/*.spec.ts',
@@ -87,51 +89,13 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
 
-  projects: [
-    {
-      name: 'web-client',
-      testDir: './apps/web/tests/e2e/client',
-      use: {
-        baseURL: getBaseURL('web'),
-        // @ts-expect-error - nuxt config extended by @nuxt/test-utils
-        nuxt: createNuxtConfig('web'),
-      },
+  projects: projectConfigs.map(p => ({
+    name: p.name,
+    testDir: p.dir,
+    use: {
+      baseURL: getBaseURL(p.app === 'admin' ? 'admin' : 'web'),
+      // @ts-expect-error
+      nuxt: createNuxtConfig(p.app),
     },
-    {
-      name: 'web-coach',
-      testDir: './apps/web/tests/e2e/coach',
-      use: {
-        baseURL: getBaseURL('web'),
-        // @ts-expect-error - nuxt config extended by @nuxt/test-utils
-        nuxt: createNuxtConfig('web'),
-      },
-    },
-    {
-      name: 'web-marketing',
-      testDir: './apps/web/tests/e2e/marketing',
-      use: {
-        baseURL: getBaseURL('web'),
-        // @ts-expect-error - nuxt config extended by @nuxt/test-utils
-        nuxt: createNuxtConfig('web'),
-      },
-    },
-    {
-      name: 'admin',
-      testDir: './apps/admin/tests/e2e',
-      use: {
-        baseURL: getBaseURL('admin'),
-        // @ts-expect-error - nuxt config extended by @nuxt/test-utils
-        nuxt: createNuxtConfig('admin'),
-      },
-    },
-    {
-      name: 'lifecycles',
-      testDir: './packages/layer-base/app/tests/lifecycles/workflows',
-      use: {
-        baseURL: getBaseURL('web'),
-        // @ts-expect-error - nuxt config extended by @nuxt/test-utils
-        nuxt: createNuxtConfig('web'),
-      },
-    },
-  ],
+  })),
 })

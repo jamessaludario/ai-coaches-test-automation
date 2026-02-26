@@ -67,7 +67,7 @@ test.describe('Complete Workshop Lifecycle', () => {
           pageRoutes.home,
           workshopsPage,
         )
-        await clientPage.waitForURL(workshopRoutes.details, { timeout: 10000 })
+        await clientPage.waitForURL(workshopRoutes.details, { timeout: timeouts.page.navigation })
         await clientPage.waitForLoadState('networkidle')
       })
 

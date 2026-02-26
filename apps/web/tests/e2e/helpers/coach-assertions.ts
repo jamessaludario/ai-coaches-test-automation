@@ -1,6 +1,6 @@
 import type { Page } from 'playwright'
 import { expect } from '@nuxt/test-utils/playwright'
-import { dashboardContent } from '../constants'
+import { dashboardContent, timeouts } from '../constants'
 
 /**
  * Coach Page Assertions
@@ -25,52 +25,52 @@ export async function expectCoachProfileSectionsVisible(page: Page) {
   ]
 
   for (const section of sections) {
-    await expect(section.first()).toBeVisible({ timeout: 10000 })
+    await expect(section.first()).toBeVisible({ timeout: timeouts.ui.elementVisible })
   }
 }
 
 export async function expectCoachBasicFieldsVisible(page: Page) {
-  await expect(page.getByLabel(/username/i)).toBeVisible({ timeout: 10000 })
-  await expect(page.getByLabel(/email/i)).toBeVisible({ timeout: 10000 })
+  await expect(page.getByLabel(/username/i)).toBeVisible({ timeout: timeouts.ui.elementVisible })
+  await expect(page.getByLabel(/email/i)).toBeVisible({ timeout: timeouts.ui.elementVisible })
 }
 
 export async function expectCoachProfileSaveSuccess(page: Page) {
   await expect(page.getByText(/saved|updated.*successfully/i))
-    .toBeVisible({ timeout: 10000 })
+    .toBeVisible({ timeout: timeouts.ui.elementVisible })
 }
 
 // Coach Dashboard Page
 export async function expectCoachDashboardVisible(page: Page) {
   await expect(page.getByRole('heading', { name: dashboardContent.coach.heading }))
-    .toBeVisible({ timeout: 30000 })
+    .toBeVisible({ timeout: timeouts.page.pageLoad })
 }
 
 export async function expectCoachWorkshopsSectionVisible(page: Page) {
   await expect(page.getByRole('heading', { name: dashboardContent.coach.navigation.workshops.text, exact: true }))
-    .toBeVisible({ timeout: 30000 })
+    .toBeVisible({ timeout: timeouts.page.pageLoad })
 }
 
 export async function expectCoachBookingsSectionVisible(page: Page) {
   await expect(page.getByRole('heading', { name: dashboardContent.coach.navigation.bookings.text, exact: true }))
-    .toBeVisible({ timeout: 30000 })
+    .toBeVisible({ timeout: timeouts.page.pageLoad })
 }
 
 export async function expectCoachAccountProfileVisible(page: Page) {
   await expect(page.getByRole('link', { name: dashboardContent.coach.navigation.account.text }))
-    .toBeVisible({ timeout: 10000 })
+    .toBeVisible({ timeout: timeouts.ui.elementVisible })
 }
 
 export async function expectCoachMetricsVisible(page: Page, metrics: typeof dashboardContent.coach.metrics) {
   for (const metric of metrics) {
     await expect(page.locator('h3').filter({ hasText: metric }))
-      .toBeVisible({ timeout: 10000 })
+      .toBeVisible({ timeout: timeouts.ui.elementVisible })
   }
 }
 
 async function expectCoachSection(page: Page, sectionKey: keyof typeof dashboardContent.coach.sections, emptyStateKey: keyof typeof dashboardContent.coach.emptyStates) {
   const headingText = dashboardContent.coach.sections[sectionKey]
   const sectionHeading = page.getByRole('heading', { name: headingText })
-  await expect(sectionHeading).toBeVisible({ timeout: 30000 })
+  await expect(sectionHeading).toBeVisible({ timeout: timeouts.page.pageLoad })
 
   const cards = page.locator('div.card').filter({
     has: page.getByRole('heading', { name: headingText }),
@@ -103,35 +103,35 @@ export async function expectCoachRecentBookingsSection(page: Page) {
 export async function expectCoachAccountProfileSectionsVisible(page: Page) {
   for (const section of Object.values(dashboardContent.coach.accountProfileSections)) {
     await expect(page.getByRole('heading', { name: section }))
-      .toBeVisible({ timeout: 10000 })
+      .toBeVisible({ timeout: timeouts.ui.elementVisible })
   }
 }
 
 // Coach Booking Details Page
 export async function expectCoachBookingDetailsVisible(page: Page) {
-  await expect(page.getByText(/booking.*id/i).first()).toBeVisible({ timeout: 30000 })
-  await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible({ timeout: 10000 })
+  await expect(page.getByText(/booking.*id/i).first()).toBeVisible({ timeout: timeouts.page.pageLoad })
+  await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible({ timeout: timeouts.ui.elementVisible })
 }
 
 export async function expectCoachBookingPaymentVisible(page: Page) {
   await expect(page.getByText(/payment.*summary|total.*amount/i))
-    .toBeVisible({ timeout: 10000 })
+    .toBeVisible({ timeout: timeouts.ui.elementVisible })
 }
 
 export async function expectCoachBookingTabsVisible(page: Page) {
   await expect(page.getByRole('tab', { name: /details/i }))
-    .toBeVisible({ timeout: 10000 })
+    .toBeVisible({ timeout: timeouts.ui.elementVisible })
 }
 
 export async function expectCoachBookingInfoVisible(page: Page) {
   await expect(page.locator('span.badge', { hasText: /completed|confirmed|pending|cancelled/i }))
-    .toBeVisible({ timeout: 10000 })
+    .toBeVisible({ timeout: timeouts.ui.elementVisible })
 }
 
 // Coach Workshop Details Page
 export async function expectCoachWorkshopOverviewVisible(page: Page) {
   await expect(page.getByRole('heading', { level: 1 }))
-    .toBeVisible({ timeout: 30000 })
+    .toBeVisible({ timeout: timeouts.page.pageLoad })
 }
 
 export async function expectCoachWorkshopMetricsVisible(page: Page) {
@@ -143,23 +143,23 @@ export async function expectCoachWorkshopMetricsVisible(page: Page) {
   ]
 
   for (const metric of metrics) {
-    await expect(metric).toBeVisible({ timeout: 10000 })
+    await expect(metric).toBeVisible({ timeout: timeouts.ui.elementVisible })
   }
 }
 export async function expectCoachWorkshopTabsVisible(page: Page) {
   await expect(page.getByRole('tab', { name: /overview/i }))
-    .toBeVisible({ timeout: 10000 })
+    .toBeVisible({ timeout: timeouts.ui.elementVisible })
 }
 
 // Coach Workshop Schedule Page
 export async function expectCoachWorkshopSchedulePageLoaded(page: Page) {
   await expect(page.getByRole('heading', { name: /workshop.*schedules|schedules/i }))
-    .toBeVisible({ timeout: 30000 })
+    .toBeVisible({ timeout: timeouts.page.pageLoad })
 }
 
 export async function expectCoachScheduleOverviewVisible(page: Page) {
   await expect(page.getByRole('heading', { level: 1 }))
-    .toBeVisible({ timeout: 30000 })
+    .toBeVisible({ timeout: timeouts.page.pageLoad })
 }
 
 export async function expectCoachScheduleMetricsVisible(page: Page) {
@@ -183,15 +183,15 @@ export async function expectCoachScheduleMetricsVisible(page: Page) {
 
 export async function expectCoachScheduleTabsVisible(page: Page) {
   await expect(page.getByRole('tab', { name: /overview/i }))
-    .toBeVisible({ timeout: 10000 })
+    .toBeVisible({ timeout: timeouts.ui.elementVisible })
 }
 
 export async function expectCoachScheduleDetailsVisible(page: Page) {
   const scheduleDetails = page.locator('div.card').filter({ hasText: /schedule.*details/i })
   const capacityInfo = page.locator('div.card').filter({ hasText: /capacity|max.*participants|available.*seats/i })
 
-  const isDetailsVisible = await scheduleDetails.isVisible({ timeout: 10000 }).catch(() => false)
-  const isCapacityVisible = await capacityInfo.isVisible({ timeout: 10000 }).catch(() => false)
+  const isDetailsVisible = await scheduleDetails.isVisible({ timeout: timeouts.ui.elementVisible }).catch(() => false)
+  const isCapacityVisible = await capacityInfo.isVisible({ timeout: timeouts.ui.elementVisible }).catch(() => false)
 
   expect(isDetailsVisible || isCapacityVisible).toBe(true)
 }

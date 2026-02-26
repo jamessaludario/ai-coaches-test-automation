@@ -1,4 +1,4 @@
-import type { Page } from 'playwright'
+import type { Locator, Page } from 'playwright'
 import { expect } from '@nuxt/test-utils/playwright'
 import {
   coachProfileContent,
@@ -10,11 +10,17 @@ import {
 import {
   expectHeadingsVisible,
   extractScheduleDatetimes,
-  selectFirstIfMultiple,
   validateCardsContainMode,
   validateCardsContainText,
 } from '../helpers'
 import { escapeRegExp, validateScheduleDatetime } from '../utils'
+
+/** Select first element if multiple matches exist */
+async function selectFirstIfMultiple(locator: Locator): Promise<Locator> {
+  const count = await locator.count()
+  return count > 1 ? locator.first() : locator
+}
+
 
 /**
  * Marketing Page Assertions
@@ -24,7 +30,7 @@ import { escapeRegExp, validateScheduleDatetime } from '../utils'
 
 type ScheduleValidationResult
   = | { skipped: true, reason: string }
-    | { skipped: false, validated: number }
+  | { skipped: false, validated: number }
 
 // Home Page
 export async function expectHomeHeroSection(page: Page, badges: readonly string[]) {
@@ -110,7 +116,7 @@ export async function expectCoachModeFilter(page: Page, mode: string) {
 // Workshop Details Page
 export async function expectWorkshopDetailsVisible(page: Page, workshopName: string) {
   await expect(page.getByRole('heading', { name: workshopName }))
-    .toBeVisible({ timeout: 10000 })
+    .toBeVisible({ timeout: timeouts.ui.elementVisible })
   await expect(page.getByRole('button', { name: workshopContent.details.shareButton }))
     .toBeVisible()
   await expect(page.getByRole('link', { name: workshopContent.details.backButton }))
@@ -143,7 +149,7 @@ export async function expectFutureSchedulesOnly(page: Page): Promise<ScheduleVal
   })
 
   const hasUpcomingSessions = await upcomingSessionsHeading
-    .waitFor({ state: 'visible', timeout: 15000 })
+    .waitFor({ state: 'visible', timeout: timeouts.page.pageLoad })
     .then(() => true)
     .catch(() => false)
 
@@ -180,13 +186,13 @@ export async function expectFutureSchedulesOnly(page: Page): Promise<ScheduleVal
 // Workshop Schedule Details Page
 export async function expectScheduleDetailsVisible(page: Page, workshopName: string) {
   await expect(page.getByRole('link', { name: workshopContent.schedule.bookButton }))
-    .toBeVisible({ timeout: 10000 })
+    .toBeVisible({ timeout: timeouts.ui.elementVisible })
   await expect(page.getByRole('heading', { name: workshopName }))
     .toBeVisible()
   await expect(page.getByRole('button', { name: workshopContent.schedule.shareButton }))
     .toBeVisible()
   await expect(page.locator('text=/[A-Z][a-z]+ \\d{1,2}, \\d{4}/').first())
-    .toBeVisible({ timeout: 10000 })
+    .toBeVisible({ timeout: timeouts.ui.elementVisible })
   await expect(page.getByText('$', { exact: false }).first())
     .toBeVisible()
   await expect(page.getByText(workshopContent.schedule.spotText))

@@ -1,6 +1,6 @@
 import { userRoutes } from '../../constants'
 import { nuxtGoto } from '../../helpers'
-import { BasePage } from '../../page-objects'
+import { BasePage } from '@layer-base/e2e/page-objects'
 
 /**
  * Client Workshops Page Object

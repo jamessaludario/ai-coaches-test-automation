@@ -1,7 +1,7 @@
 import { expect } from '@nuxt/test-utils/playwright'
 import { timeouts, userRoutes } from '../../constants'
 import { nuxtGoto } from '../../helpers'
-import { BasePage } from '../../page-objects'
+import { BasePage } from '@layer-base/e2e/page-objects'
 
 /**
  * Coach Account Page Object

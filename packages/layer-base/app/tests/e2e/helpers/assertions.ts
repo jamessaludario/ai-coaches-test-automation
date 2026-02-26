@@ -92,101 +92,6 @@ export async function expectTextVisible(
   }
 }
 
-/**
- * Assert that page is at specific URL
- */
-export async function expectURL(page: Page, url: string | RegExp, options?: { timeout?: number }) {
-  await expect(page).toHaveURL(url, options)
-}
-
-/**
- * Assert that page has a specific title
- */
-export async function expectTitle(page: Page, title: string | RegExp, options?: { timeout?: number }) {
-  await expect(page).toHaveTitle(title, options)
-}
-
-/**
- * Wait for page to be at a specific URL
- */
-export async function waitForURL(page: Page, url: string | RegExp, options?: { timeout?: number }) {
-  await page.waitForURL(url, options)
-}
-
-// =============================================================================
-// LOCATOR-LEVEL ASSERTIONS
-// =============================================================================
-
-/**
- * Assert that a locator is visible
- */
-export async function expectVisible(locator: Locator, timeout?: number) {
-  await expect(locator).toBeVisible({ timeout })
-}
-
-/**
- * Assert that a locator is not visible
- */
-export async function expectNotVisible(locator: Locator, timeout?: number) {
-  await expect(locator).not.toBeVisible({ timeout })
-}
-
-/**
- * Assert that a locator contains specific text
- */
-export async function expectTextContent(locator: Locator, text: string | RegExp) {
-  await expect(locator).toContainText(text)
-}
-
-/**
- * Assert that a locator has a specific value
- */
-export async function expectValue(locator: Locator, value: string | RegExp, options?: { timeout?: number }) {
-  await expect(locator).toHaveValue(value, options)
-}
-
-/**
- * Assert that an element is enabled
- */
-export async function expectEnabled(locator: Locator, options?: { timeout?: number }) {
-  await expect(locator).toBeEnabled(options)
-}
-
-/**
- * Assert that an element is disabled
- */
-export async function expectDisabled(locator: Locator, options?: { timeout?: number }) {
-  await expect(locator).toBeDisabled(options)
-}
-
-/**
- * Assert that an element is checked (for checkboxes/radios)
- */
-export async function expectChecked(locator: Locator, options?: { timeout?: number }) {
-  await expect(locator).toBeChecked(options)
-}
-
-/**
- * Assert that an element has a specific count
- */
-export async function expectCount(locator: Locator, count: number, options?: { timeout?: number }) {
-  await expect(locator).toHaveCount(count, options)
-}
-
-/**
- * Assert that an element has a specific attribute
- */
-export async function expectAttribute(locator: Locator, name: string, value: string | RegExp, options?: { timeout?: number }) {
-  await expect(locator).toHaveAttribute(name, value, options)
-}
-
-/**
- * Assert that an element has a specific class
- */
-export async function expectClass(locator: Locator, className: string | RegExp, options?: { timeout?: number }) {
-  await expect(locator).toHaveClass(className, options)
-}
-
 // =============================================================================
 // VALUE MATCHING HELPERS (returns boolean, not assertion)
 // =============================================================================
@@ -200,9 +105,6 @@ export async function inputValueMatches(locator: Locator, expected?: string): Pr
   if (await locator.count() === 0)
     return false
   const value = await locator.inputValue()
-  // Add support for exact match if needed, but for now preserve includes behavior or adhere to task
-  // Task says "Fix assertions.ts inputValueMatches". Maybe it meant to use exact match?
-  // Or handle null value?
   return value.includes(expected)
 }
 

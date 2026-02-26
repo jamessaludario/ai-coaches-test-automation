@@ -2,7 +2,7 @@ import type { Page } from 'playwright'
 import type { UserCredentials } from '../constants'
 import type { LoginPage } from '../page-objects/login-page'
 import type { NuxtGoto } from './navigation-helpers'
-import { accountMenuContent, adminBaseUrl, loginRoutes, testUsers } from '../constants'
+import { accountMenuContent, adminBaseUrl, loginRoutes, testUsers, timeouts } from '../constants'
 import { escapeRegExp } from '../utils'
 
 export async function loginUser(
@@ -64,5 +64,5 @@ export async function logout(page: Page, user: UserCredentials) {
   await userProfileButton.click()
   await page.getByRole('menuitem', { name: accountMenuContent.switchAccount }).click()
   await page.getByRole('menuitem', { name: accountMenuContent.logout }).click()
-  await page.waitForURL(user.role === 'admin' ? adminBaseUrl + loginRoutes.login : loginRoutes.login, { timeout: 10000 })
+  await page.waitForURL(user.role === 'admin' ? adminBaseUrl + loginRoutes.login : loginRoutes.login, { timeout: timeouts.page.navigation })
 }

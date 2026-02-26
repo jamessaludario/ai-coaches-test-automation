@@ -99,3 +99,8 @@ export const authContent = {
   passwordLabel: /Password/i,
   loginButton: /Log in|Submit/i,
 } as const
+
+export const accountMenuContent = {
+  switchAccount: /Switch Account/i,
+  logout: /Log out/i,
+} as const

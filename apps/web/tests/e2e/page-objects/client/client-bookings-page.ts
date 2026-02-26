@@ -1,6 +1,6 @@
 import { userRoutes } from '../../constants'
 import { nuxtGoto, waitForDataTableLoad } from '../../helpers'
-import { BasePage } from '../../page-objects'
+import { BasePage } from '@layer-base/e2e/page-objects'
 
 /**
  * Client Bookings Page Object

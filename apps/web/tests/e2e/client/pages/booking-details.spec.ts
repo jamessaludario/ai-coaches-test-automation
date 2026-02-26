@@ -4,7 +4,6 @@ import {
   expectClientBookingDetailsVisible,
   expectClientBookingsPageLoaded,
   expectClientBookingTabsVisible,
-  expectNotVisible,
   getFirstDataTableCellText,
 } from '../../helpers'
 import { ClientBookingDetailsPage, ClientBookingsPage } from '../../page-objects'
@@ -71,7 +70,7 @@ test.describe('Client Booking Details', () => {
       await authenticatedClientPage.getByRole('button', { name: 'Invite', exact: true }).click()
       await authenticatedClientPage.getByRole('textbox', { name: 'Email' }).fill(`test${i}@example.com`)
       await authenticatedClientPage.getByRole('button', { name: 'Send Invitation' }).click()
-      await expectNotVisible(authenticatedClientPage.getByRole('button', { name: 'Send Invitation' }))
+      await expect(authenticatedClientPage.getByRole('button', { name: 'Send Invitation' })).not.toBeVisible()
     }
   })
 })

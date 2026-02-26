@@ -20,6 +20,92 @@ export async function getVisibleCards(page: Page, selector: string): Promise<Loc
   return cards.filter((_, index) => visibilityChecks[index])
 }
 
+export function getLoadingIndicators(page: Page): Locator[] {
+  return [
+    page.getByText('Loading...'),
+    page.getByRole('progressbar'),
+    page.locator('[data-loading="true"]'),
+    page.locator('.loading'),
+  ]
+}
+
+// =============================================================================
+// SHARED STABILIZATION HELPERS
+// =============================================================================
+
+/**
+ * Wait for loading indicators (spinners, progress bars) to disappear
+ */
+async function waitForLoadingIndicatorsToHide(
+  page: Page,
+  timeout: number,
+  startTime: number,
+): Promise<void> {
+  const loadingIndicators = getLoadingIndicators(page)
+
+  for (const indicator of loadingIndicators) {
+    const isVisible = await indicator.isVisible().catch(() => false)
+    if (isVisible) {
+      const remainingTime = Math.max(3000, timeout - (Date.now() - startTime))
+      await indicator.waitFor({ state: 'hidden', timeout: remainingTime }).catch(() => { })
+      break
+    }
+  }
+}
+
+/**
+ * Poll card count until it stabilizes (same count for N consecutive checks)
+ */
+async function waitForStableCardCount(
+  page: Page,
+  selector: string,
+  options: {
+    timeout: number
+    startTime: number
+    checkInterval?: number
+    requiredStableChecks?: number
+    maxIterations?: number
+    initialCount?: number
+  },
+): Promise<void> {
+  const {
+    timeout,
+    startTime,
+    checkInterval = 300,
+    requiredStableChecks = 3,
+    maxIterations = 10,
+    initialCount = 0,
+  } = options
+
+  let previousCount = initialCount
+  let stableIterations = 0
+
+  for (let i = 0; i < maxIterations && Date.now() - startTime < timeout; i++) {
+    if (await hasNoWorkshopsFound(page)) {
+      return
+    }
+
+    const currentCount = await page.locator(selector).count()
+
+    if (currentCount === previousCount && currentCount > 0) {
+      stableIterations++
+      if (stableIterations >= requiredStableChecks) {
+        break
+      }
+    }
+    else {
+      stableIterations = 0
+      previousCount = currentCount
+    }
+
+    await page.waitForTimeout(checkInterval)
+  }
+}
+
+// =============================================================================
+// PUBLIC CARD WAIT FUNCTIONS
+// =============================================================================
+
 export async function waitForCardsToLoad(
   page: Page,
   selector: string,
@@ -31,15 +117,7 @@ export async function waitForCardsToLoad(
     return
   }
 
-  const loadingIndicators = getLoadingIndicators(page)
-
-  for (const indicator of loadingIndicators) {
-    const isVisible = await indicator.isVisible().catch(() => false)
-    if (isVisible) {
-      const remainingTime = Math.max(0, timeout - (Date.now() - startTime))
-      await indicator.waitFor({ state: 'hidden', timeout: remainingTime }).catch(() => {})
-    }
-  }
+  await waitForLoadingIndicatorsToHide(page, timeout, startTime)
 
   if (await hasNoWorkshopsFound(page)) {
     return
@@ -48,7 +126,7 @@ export async function waitForCardsToLoad(
   await page.locator(selector).first().waitFor({
     state: 'visible',
     timeout: Math.max(5000, timeout - (Date.now() - startTime)),
-  }).catch(() => {})
+  }).catch(() => { })
 
   if (await hasNoWorkshopsFound(page)) {
     return
@@ -56,37 +134,19 @@ export async function waitForCardsToLoad(
 
   await page.waitForLoadState('networkidle', {
     timeout: Math.max(5000, timeout - (Date.now() - startTime)),
-  }).catch(() => {})
+  }).catch(() => { })
 
   if (await hasNoWorkshopsFound(page)) {
     return
   }
 
-  let previousCount = 0
-  let stableIterations = 0
-  const maxIterations = 10
-  const checkInterval = 300
-
-  for (let i = 0; i < maxIterations && Date.now() - startTime < timeout; i++) {
-    if (await hasNoWorkshopsFound(page)) {
-      return
-    }
-
-    const currentCount = await page.locator(selector).count()
-
-    if (currentCount === previousCount && currentCount > 0) {
-      stableIterations++
-      if (stableIterations >= 3) {
-        break
-      }
-    }
-    else {
-      stableIterations = 0
-      previousCount = currentCount
-    }
-
-    await page.waitForTimeout(checkInterval)
-  }
+  await waitForStableCardCount(page, selector, {
+    timeout,
+    startTime,
+    checkInterval: 300,
+    requiredStableChecks: 3,
+    maxIterations: 10,
+  })
 }
 
 export async function waitForCardsToRefresh(
@@ -98,55 +158,29 @@ export async function waitForCardsToRefresh(
 
   await page.waitForTimeout(150)
 
-  const loadingIndicators = getLoadingIndicators(page)
+  await waitForLoadingIndicatorsToHide(page, timeout, startTime)
 
-  for (const indicator of loadingIndicators) {
-    const isVisible = await indicator.isVisible().catch(() => false)
-    if (isVisible) {
-      await indicator.waitFor({ state: 'hidden', timeout: Math.max(3000, timeout - (Date.now() - startTime)) }).catch(() => {})
-      break
-    }
-  }
+  await page.waitForLoadState('networkidle', {
+    timeout: Math.max(4000, timeout - (Date.now() - startTime)),
+  }).catch(() => { })
 
-  await page.waitForLoadState('networkidle', { timeout: Math.max(4000, timeout - (Date.now() - startTime)) }).catch(() => {})
-
-  let previousCount = await page.locator(selector).count()
-  let stableIterations = 0
-  const maxIterations = 30
-  const checkInterval = 100
-
-  for (let i = 0; i < maxIterations && Date.now() - startTime < timeout; i++) {
-    await page.waitForTimeout(checkInterval)
-    const currentCount = await page.locator(selector).count()
-
-    if (currentCount === previousCount) {
-      stableIterations++
-      if (stableIterations >= 6) {
-        break
-      }
-    }
-    else {
-      stableIterations = 0
-      previousCount = currentCount
-    }
-  }
+  const initialCount = await page.locator(selector).count()
+  await waitForStableCardCount(page, selector, {
+    timeout,
+    startTime,
+    checkInterval: 100,
+    requiredStableChecks: 6,
+    maxIterations: 30,
+    initialCount,
+  })
 
   const finalCount = await page.locator(selector).count()
   if (finalCount > 0) {
-    await page.locator(selector).first().waitFor({ state: 'visible', timeout: 1500 }).catch(() => {})
-    await page.waitForLoadState('networkidle', { timeout: 1500 }).catch(() => {})
+    await page.locator(selector).first().waitFor({ state: 'visible', timeout: 1500 }).catch(() => { })
+    await page.waitForLoadState('networkidle', { timeout: 1500 }).catch(() => { })
     await page.waitForTimeout(200)
   }
   else {
     await page.waitForTimeout(500)
   }
-}
-
-export function getLoadingIndicators(page: Page): Locator[] {
-  return [
-    page.getByText('Loading...'),
-    page.getByRole('progressbar'),
-    page.locator('[data-loading="true"]'),
-    page.locator('.loading'),
-  ]
 }

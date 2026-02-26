@@ -26,7 +26,7 @@ test.describe('Coach Dashboard Metrics', () => {
     await expectCoachMetricsVisible(authenticatedCoachPage, dashboardContent.coach.metrics)
     const metricsValues = await dashboard.metricsValues
     for (const metricValue of metricsValues) {
-      await expect(metricValue).toHaveText(/^\$?\s*\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?$/, { timeout: 10000 })
+      await expect(metricValue).toHaveText(/^\$?\s*\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?$/, { timeout: timeouts.ui.elementVisible })
     }
   })
 })

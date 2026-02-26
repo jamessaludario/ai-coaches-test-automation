@@ -1,4 +1,5 @@
-import { BasePage } from '../../page-objects'
+import { timeouts } from '../../constants'
+import { BasePage } from '@layer-base/e2e/page-objects'
 
 /**
  * Coach Workshop Details Page Object
@@ -70,26 +71,26 @@ export class CoachWorkshopDetailsPage extends BasePage {
 
   async navigateToCalendar() {
     await this.calendarTab.click()
-    await this.page.waitForURL(/\/calendar$/, { timeout: 10000 })
+    await this.page.waitForURL(/\/calendar$/, { timeout: timeouts.page.navigation })
   }
 
   async navigateToHistory() {
     await this.historyTab.click()
-    await this.page.waitForURL(/\/history$/, { timeout: 10000 })
+    await this.page.waitForURL(/\/history$/, { timeout: timeouts.page.navigation })
   }
 
   async navigateToInvoices() {
     await this.invoicesTab.click()
-    await this.page.waitForURL(/\/invoices$/, { timeout: 10000 })
+    await this.page.waitForURL(/\/invoices$/, { timeout: timeouts.page.navigation })
   }
 
   async navigateToPayouts() {
     await this.payoutsTab.click()
-    await this.page.waitForURL(/\/payouts$/, { timeout: 10000 })
+    await this.page.waitForURL(/\/payouts$/, { timeout: timeouts.page.navigation })
   }
 
   async navigateToResources() {
     await this.resourcesTab.click()
-    await this.page.waitForURL(/\/resources$/, { timeout: 10000 }) // Keep for now or use constant if imported
+    await this.page.waitForURL(/\/resources$/, { timeout: timeouts.page.navigation })
   }
 }

@@ -1,4 +1,5 @@
-import { BasePage } from '../../page-objects'
+import { timeouts } from '../../constants'
+import { BasePage } from '@layer-base/e2e/page-objects'
 
 /**
  * Coach Booking Details Page Object
@@ -70,16 +71,16 @@ export class CoachBookingDetailsPage extends BasePage {
 
   async navigateToPayments() {
     await this.paymentsTab.click()
-    await this.page.waitForURL(/\/payments$/, { timeout: 10000 })
+    await this.page.waitForURL(/\/payments$/, { timeout: timeouts.page.navigation })
   }
 
   async navigateToResources() {
     await this.resourcesTab.click()
-    await this.page.waitForURL(/\/resources$/, { timeout: 10000 })
+    await this.page.waitForURL(/\/resources$/, { timeout: timeouts.page.navigation })
   }
 
   async navigateToSeats() {
     await this.seatsTab.click()
-    await this.page.waitForURL(/\/seats$/, { timeout: 10000 })
+    await this.page.waitForURL(/\/seats$/, { timeout: timeouts.page.navigation })
   }
 }

@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
@@ -10,7 +12,17 @@
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node", "@playwright/test", "@nuxt/test-utils"]
+    "types": [
+      "node",
+      "@playwright/test",
+      "@nuxt/test-utils"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@layer-base/e2e/*": [
+        "./packages/layer-base/app/tests/e2e/*"
+      ]
+    }
   },
   "include": [
     "playwright.config.ts",

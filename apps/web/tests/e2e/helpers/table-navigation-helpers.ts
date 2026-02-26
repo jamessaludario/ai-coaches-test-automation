@@ -1,4 +1,5 @@
 import type { Page } from 'playwright'
+import { timeouts } from '../constants'
 import { clickRowAction, getFirstDataTableCellText } from '../helpers'
 import { escapeRegExp } from '../utils'
 
@@ -32,7 +33,7 @@ async function navigateToFirstRow(
   }
 
   await clickAction()
-  await page.waitForURL(urlPattern, { timeout: 10000 })
+  await page.waitForURL(urlPattern, { timeout: timeouts.page.navigation })
 
   const url = page.url()
   const match = url.match(urlPattern)

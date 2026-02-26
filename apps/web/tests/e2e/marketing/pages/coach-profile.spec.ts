@@ -23,21 +23,12 @@ test.describe('Coach Profile Page', () => {
     await expectCoachWorkshopSearchResults(page, defaultWorkshop.name)
   })
 
-  test.describe('Workshop Mode Filters', () => {
+  test('Workshop Mode Filters', async ({ page }) => {
     for (const { name, textLocator } of workshopModes) {
-      test(`filter workshops by mode: ${name}`, async ({ page }) => {
-        // coachProfilePage is initialized in beforeEach
-        // const goto = createNuxtGoto(page)
-        // const profilePage = new CoachProfilePage(page, goto)
-        // Actually beforeEach sets 'coachProfilePage' variable. I can use it.
-        // But 'coachProfilePage' is let-declared in outer scope.
-        // I need to make sure I can access it. Yes.
-
-        await coachProfilePage.scrollToSchedules()
-        await coachProfilePage.uncheckAllModes()
-        await coachProfilePage.toggleModeFilter(name, true)
-        await expectCoachModeFilter(page, textLocator)
-      })
+      await coachProfilePage.scrollToSchedules()
+      await coachProfilePage.uncheckAllModes()
+      await coachProfilePage.toggleModeFilter(name, true)
+      await expectCoachModeFilter(page, textLocator)
     }
   })
 })

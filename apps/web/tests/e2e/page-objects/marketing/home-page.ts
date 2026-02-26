@@ -2,7 +2,7 @@ import type { Page } from 'playwright'
 import type { NuxtGoto } from '../../helpers'
 import { expect } from '@nuxt/test-utils/playwright'
 import { homePageContent, pageRoutes, timeouts } from '../../constants'
-import { BasePage } from '../../page-objects'
+import { BasePage } from '@layer-base/e2e/page-objects'
 
 /**
  * Home Page Object
