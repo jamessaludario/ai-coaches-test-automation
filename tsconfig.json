@@ -14,19 +14,17 @@
     "forceConsistentCasingInFileNames": true,
     "types": [
       "node",
-      "@playwright/test",
-      "@nuxt/test-utils"
+      "@playwright/test"
     ],
     "baseUrl": ".",
     "paths": {
-      "@layer-base/e2e/*": [
-        "./packages/layer-base/app/tests/e2e/*"
+      "@e2e/*": [
+        "./e2e/*"
       ]
     }
   },
   "include": [
     "playwright.config.ts",
-    "apps/**/tests/**/*.ts",
-    "packages/**/tests/**/*.ts"
+    "e2e/**/*.ts"
   ]
 }

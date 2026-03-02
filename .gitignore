@@ -2,6 +2,7 @@
 node_modules/
 
 # Ignore authentication state files
+e2e/.auth/
 packages/layer-base/app/tests/.auth/
 *.auth-*.json
 

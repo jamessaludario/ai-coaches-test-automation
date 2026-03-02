@@ -6,69 +6,30 @@ import { fileURLToPath } from 'node:url'
 
 const rootDir = dirname(fileURLToPath(import.meta.url))
 
-// -------------------------------------
-// Detect running project (simplified)
-// -------------------------------------
-const projectArg =
-  process.argv.find(a => a.startsWith('--project='))?.split('=')[1] ||
-  process.argv[process.argv.indexOf('--project') + 1]
-
-const runningProject =
-  projectArg === 'admin' || projectArg === 'lifecycles'
-    ? projectArg
-    : 'web'
-
-// -------------------------------------
-// Load correct env once
-// -------------------------------------
 loadDotenv({
-  path: resolve(rootDir, `apps/${runningProject}/.env`),
+  path: resolve(rootDir, 'e2e/.env.test'),
   override: false,
 })
 
-process.env.__PLAYWRIGHT_ENV_LOADED__ = runningProject
-
-// -------------------------------------
-// Shared helpers
-// -------------------------------------
 const getBaseURL = (project: 'web' | 'admin') =>
   process.env[
-  project === 'admin'
-    ? 'NUXT_PUBLIC_ADMIN_BASE'
-    : 'NUXT_PUBLIC_WEB_BASE'
+    project === 'admin'
+      ? 'NUXT_PUBLIC_ADMIN_BASE'
+      : 'NUXT_PUBLIC_WEB_BASE'
   ] || ''
-
-const createNuxtConfig = (project: 'web' | 'admin' | 'lifecycles') => ({
-  rootDir: resolve(rootDir, `apps/${project}`),
-  server: false,
-  build: false,
-  loadDotenv: false,
-  dotenv: false,
-  ...(getBaseURL(project === 'admin' ? 'admin' : 'web') && {
-    host: getBaseURL(project === 'admin' ? 'admin' : 'web'),
-  }),
-})
 
 const headless = process.env.PLAYWRIGHT_HEADLESS !== 'false'
 
-// -------------------------------------
-// Project definitions (no repetition)
-// -------------------------------------
 const projectConfigs = [
-  { name: 'web-client', dir: 'apps/web/tests/e2e/client', app: 'web' },
-  { name: 'web-coach', dir: 'apps/web/tests/e2e/coach', app: 'web' },
-  { name: 'web-marketing', dir: 'apps/web/tests/e2e/marketing', app: 'web' },
-  { name: 'admin', dir: 'apps/admin/tests/e2e', app: 'admin' },
-  {
-    name: 'lifecycles',
-    dir: 'packages/layer-base/app/tests/lifecycles/workflows',
-    app: 'lifecycles',
-  },
+  { name: 'auth', dir: 'e2e/tests/auth', app: 'web' },
+  { name: 'onboarding', dir: 'e2e/tests/onboarding', app: 'web' },
+  { name: 'marketing', dir: 'e2e/tests/marketing', app: 'web' },
+  { name: 'client', dir: 'e2e/tests/client', app: 'web' },
+  { name: 'coach', dir: 'e2e/tests/coach', app: 'web' },
+  { name: 'admin', dir: 'e2e/tests/admin', app: 'admin' },
+  { name: 'workflows', dir: 'e2e/tests/workflows', app: 'web' },
 ]
 
-// -------------------------------------
-// Final config
-// -------------------------------------
 export default defineConfig({
   testDir: '.',
   testMatch: '**/*.spec.ts',
@@ -77,6 +38,9 @@ export default defineConfig({
   workers: 1,
   retries: process.env.CI ? 2 : 1,
   reporter: 'list',
+
+  globalSetup: resolve(rootDir, 'e2e/global-setup.ts'),
+  globalTeardown: resolve(rootDir, 'e2e/global-teardown.ts'),
 
   use: {
     browserName: 'chromium',
@@ -94,8 +58,6 @@ export default defineConfig({
     testDir: p.dir,
     use: {
       baseURL: getBaseURL(p.app === 'admin' ? 'admin' : 'web'),
-      // @ts-expect-error
-      nuxt: createNuxtConfig(p.app),
     },
   })),
 })

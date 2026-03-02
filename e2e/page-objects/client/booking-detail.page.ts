@@ -1,0 +1,32 @@
+import { timeouts } from '../../constants'
+import { BasePage } from '../base.page'
+
+export class ClientBookingDetailPage extends BasePage {
+  get detailsTab() { return this.page.getByRole('tab', { name: /details/i }) }
+  get paymentsTab() { return this.page.getByRole('tab', { name: /payments/i }) }
+  get resourcesTab() { return this.page.getByRole('tab', { name: /resources/i }) }
+  get seatsTab() { return this.page.getByRole('tab', { name: /seats/i }) }
+  get bookingIdText() { return this.page.getByText(/booking.*id/i) }
+  get workshopTitle() { return this.page.getByRole('heading', { level: 1 }) }
+  get bookingStatus() { return this.page.getByText(/confirmed|pending|cancelled/i) }
+
+  async navigateToBooking(bookingId: string) {
+    await this.page.goto(`/b/bookings/${bookingId}`)
+    await this.page.waitForLoadState('networkidle')
+  }
+
+  async navigateToPayments() {
+    await this.paymentsTab.click()
+    await this.page.waitForURL(/\/payments$/, { timeout: timeouts.page.navigation })
+  }
+
+  async navigateToResources() {
+    await this.resourcesTab.click()
+    await this.page.waitForURL(/\/resources$/, { timeout: timeouts.page.navigation })
+  }
+
+  async navigateToSeats() {
+    await this.seatsTab.click()
+    await this.page.waitForURL(/\/seats$/, { timeout: timeouts.page.navigation })
+  }
+}
