@@ -22,7 +22,7 @@ test.describe('Admin Workshops Page', () => {
     await expect(workshopsPage.dataTable).toBeVisible()
   })
 
-  test('navigate to workshop detail page', async ({ authenticatedAdminPage }) => {
+  test('navigate to workshop detail page', async () => {
     const workshopName = await workshopsPage.getFirstWorkshopCellText(1)
     if (!workshopName) { test.skip(true, 'No workshops available'); return }
     await workshopsPage.viewWorkshop(workshopName)
