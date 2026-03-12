@@ -10,6 +10,7 @@ packages/layer-base/app/tests/.auth/
 test-results/
 playwright-report/
 playwright/.cache/
+report.txt
 
 # Ignore environment files (if they contain secrets)
 # .env
@@ -38,6 +39,9 @@ build/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Ignore test data
+.env
 
 # Ignore package manager lock files (if using multiple package managers)
 # package-lock.json

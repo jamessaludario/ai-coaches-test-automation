@@ -19,9 +19,9 @@ export async function searchDataTable(page: Page, query: string) {
 }
 
 export async function getFirstDataTableCellText(page: Page, columnIndex: number): Promise<string | null> {
+  const emptyRow = page.getByRole('heading', { name: /No bookings found/i })
+  if (await emptyRow.isVisible()) return null
   const firstRow = page.locator('tbody tr').first()
-  const hasRows = await firstRow.isVisible().catch(() => false)
-  if (!hasRows) return null
   const cell = firstRow.locator('td').nth(columnIndex)
   return await cell.textContent()
 }

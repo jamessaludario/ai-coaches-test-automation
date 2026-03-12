@@ -1,5 +1,5 @@
 import { defaultWorkshop, timeouts } from '../../constants'
-import { cleanupAuthFile, expect, test } from '../../fixtures'
+import { expect, test } from '../../fixtures'
 import { navigateToFirstTableRow } from '../../helpers'
 import { CoachDashboardPage } from '../../page-objects/coach/dashboard.page'
 import { CoachWorkshopDetailPage } from '../../page-objects/coach/workshop-detail.page'
@@ -8,9 +8,7 @@ test.describe('Coach Workshops', () => {
   test.setTimeout(timeouts.workflow.extended)
 
   // eslint-disable-next-line no-empty-pattern
-  test.afterAll(async ({}, testInfo) => {
-    await cleanupAuthFile('coach', testInfo.workerIndex)
-  })
+  
 
   test('display workshop details page', async ({ authenticatedCoachPage }) => {
     const dashboard = new CoachDashboardPage(authenticatedCoachPage)

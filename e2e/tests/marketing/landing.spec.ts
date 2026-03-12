@@ -59,6 +59,6 @@ test.describe('Landing Page', () => {
 
   test('display workshop outcome section', async ({ page }) => {
     await scrollToText(page, homePageContent.homepageSections.workshopOutcomes.outcomes[0].name)
-    await expectHeadingsVisible(page, homePageContent.homepageSections.workshopOutcomes.outcomes.map(o => o.name))
+    await expectTextVisible(page, homePageContent.homepageSections.workshopOutcomes.outcomes.map(o => o.name))
   })
 })

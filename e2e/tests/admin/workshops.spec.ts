@@ -1,5 +1,5 @@
 import { timeouts, WORKSHOP_DATA } from '../../constants'
-import { cleanupAuthFile, expect, test } from '../../fixtures'
+import { expect, test } from '../../fixtures'
 import { AdminWorkshopsPage } from '../../page-objects/admin/workshops.page'
 import { getTimestamp } from '../../helpers/date.helper'
 
@@ -13,9 +13,7 @@ test.describe('Admin Workshops Page', () => {
   })
 
   // eslint-disable-next-line no-empty-pattern
-  test.afterAll(async ({}, testInfo) => {
-    await cleanupAuthFile('admin', testInfo.workerIndex)
-  })
+  
 
   test('display workshops page with data table', async () => {
     await expect(workshopsPage.heading).toBeVisible()

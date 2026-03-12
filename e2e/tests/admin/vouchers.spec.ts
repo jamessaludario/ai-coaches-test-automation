@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto'
 import { timeouts, voucherFixtures } from '../../constants'
-import { cleanupAuthFile, expect, test } from '../../fixtures'
+import { expect, test } from '../../fixtures'
 import { AdminVouchersPage } from '../../page-objects/admin/vouchers.page'
 
 test.describe('Admin Vouchers Page', () => {
@@ -13,9 +13,7 @@ test.describe('Admin Vouchers Page', () => {
   })
 
   // eslint-disable-next-line no-empty-pattern
-  test.afterAll(async ({}, testInfo) => {
-    await cleanupAuthFile('admin', testInfo.workerIndex)
-  })
+  
 
   test('display vouchers page', async () => {
     await expect(vouchersPage.heading).toBeVisible()

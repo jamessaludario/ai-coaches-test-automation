@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url'
 const rootDir = dirname(fileURLToPath(import.meta.url))
 
 loadDotenv({
-  path: resolve(rootDir, 'e2e/.env.test'),
+  path: resolve(rootDir, 'e2e/.env'),
   override: false,
 })
 
@@ -37,10 +37,10 @@ export default defineConfig({
   maxFailures: process.env.CI ? 1 : undefined,
   workers: 1,
   retries: process.env.CI ? 2 : 1,
-  reporter: 'list',
-
-  globalSetup: resolve(rootDir, 'e2e/global-setup.ts'),
-  globalTeardown: resolve(rootDir, 'e2e/global-teardown.ts'),
+  reporter: [
+    ['list'],
+    ['./defect-density-reporter.ts']
+  ],
 
   use: {
     browserName: 'chromium',

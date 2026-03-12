@@ -1,5 +1,5 @@
 import { timeouts } from '../../constants'
-import { cleanupAuthFile, expect, test } from '../../fixtures'
+import { expect, test } from '../../fixtures'
 import { ClientBookingsPage } from '../../page-objects/client/bookings.page'
 
 test.describe('Client Bookings', () => {
@@ -12,9 +12,7 @@ test.describe('Client Bookings', () => {
   })
 
   // eslint-disable-next-line no-empty-pattern
-  test.afterAll(async ({}, testInfo) => {
-    cleanupAuthFile('client', testInfo.workerIndex)
-  })
+  
 
   test('display bookings page', async () => {
     await expect(bookingsPage.heading).toBeVisible({ timeout: timeouts.page.pageLoad })

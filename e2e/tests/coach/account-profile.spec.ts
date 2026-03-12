@@ -1,5 +1,5 @@
 import { timeouts } from '../../constants'
-import { cleanupAuthFile, expect, test } from '../../fixtures'
+import { expect, test } from '../../fixtures'
 import { CoachAccountProfilePage } from '../../page-objects/coach/account-profile.page'
 
 test.describe('Coach Account Profile', () => {
@@ -12,12 +12,10 @@ test.describe('Coach Account Profile', () => {
   })
 
   // eslint-disable-next-line no-empty-pattern
-  test.afterAll(async ({}, testInfo) => {
-    await cleanupAuthFile('coach', testInfo.workerIndex)
-  })
+  
 
   test('display account profile page', async ({ authenticatedCoachPage }) => {
     await expect(authenticatedCoachPage).toHaveURL(/account\/profile/)
-    await expect(accountPage.pageHeading).toBeVisible()
+    await expect(accountPage.introductionVideoSection).toBeVisible()
   })
 })

@@ -90,7 +90,7 @@ export const authContent = {
   emailLabel: /Email/i,
   passwordLabel: /Password/i,
   loginButton: /Log in|Submit/i,
-  continue: /Continue/i,
+  continue: 'Continue',
 } as const
 
 export const accountMenuContent = {

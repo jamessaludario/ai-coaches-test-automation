@@ -83,6 +83,8 @@ async function ensureAuthenticated(
     return authPath
   }
   catch (err: unknown) {
+    const html = await page.content()
+    console.error(`\n--- PAGE HTML ON LOGIN FAILURE (${role}) ---\n${html}\n----------------------------------\n`)
     throw new Error(`[Auth Fixture] Authentication failed for role "${role}": ${(err as Error).message}`)
   }
   finally {

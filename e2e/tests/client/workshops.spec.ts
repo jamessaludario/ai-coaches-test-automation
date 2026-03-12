@@ -1,5 +1,5 @@
 import { defaultWorkshop, timeouts } from '../../constants'
-import { cleanupAuthFile, expect, test } from '../../fixtures'
+import { expect, test } from '../../fixtures'
 import { ClientWorkshopsPage } from '../../page-objects/client/workshops.page'
 
 test.describe('Client Workshops', () => {
@@ -12,9 +12,7 @@ test.describe('Client Workshops', () => {
   })
 
   // eslint-disable-next-line no-empty-pattern
-  test.afterAll(async ({}, testInfo) => {
-    await cleanupAuthFile('client', testInfo.workerIndex)
-  })
+  
 
   test('display workshops page', async ({ authenticatedClientPage }) => {
     await expect(workshopsPage.heading).toBeVisible({ timeout: timeouts.page.pageLoad })

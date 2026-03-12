@@ -1,5 +1,5 @@
 import { adminRoutes, adminSelectors, timeouts } from '../../constants'
-import { cleanupAuthFile, expect, test } from '../../fixtures'
+import { expect, test } from '../../fixtures'
 import { AdminDashboardPage } from '../../page-objects/admin/dashboard.page'
 
 test.describe('Admin Dashboard', () => {
@@ -12,9 +12,7 @@ test.describe('Admin Dashboard', () => {
   })
 
   // eslint-disable-next-line no-empty-pattern
-  test.afterAll(async ({}, testInfo) => {
-    await cleanupAuthFile('admin', testInfo.workerIndex)
-  })
+  
 
   test('displays dashboard page with all elements', async () => {
     await expect(dashboardPage.heading).toBeVisible()

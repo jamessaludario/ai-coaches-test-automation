@@ -1,5 +1,5 @@
 import { adminUserFixtures, timeouts } from '../../constants'
-import { cleanupAuthFile, expect, test } from '../../fixtures'
+import { expect, test } from '../../fixtures'
 import { AdminUsersPage } from '../../page-objects/admin/users.page'
 
 test.describe('Admin Users Page', () => {
@@ -12,9 +12,7 @@ test.describe('Admin Users Page', () => {
   })
 
   // eslint-disable-next-line no-empty-pattern
-  test.afterAll(async ({}, testInfo) => {
-    await cleanupAuthFile('admin', testInfo.workerIndex)
-  })
+  
 
   test('displays users page with data table', async () => {
     await expect(usersPage.heading).toBeVisible()

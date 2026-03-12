@@ -6,7 +6,7 @@ import { expect } from 'playwright/test'
 
 export class LoginPage extends BasePage {
   get emailInput() {
-    return this.page.getByLabel('Email')
+    return this.page.getByRole('textbox', { name: /Email/i })
   }
 
   get passwordInput() {
@@ -18,7 +18,7 @@ export class LoginPage extends BasePage {
   }
 
   get continueButton() {
-    return this.page.getByRole('button', { name: authContent.continue })
+    return this.page.getByRole('button', { name: authContent.continue, exact: true })
   }
 
   get verifyButton() {

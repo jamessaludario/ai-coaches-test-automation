@@ -25,9 +25,7 @@ export async function nuxtGoto(page: Page, url: string, options?: NuxtGotoOption
     await page.waitForLoadState('domcontentloaded')
   }
   try {
-    await page.waitForFunction(() => {
-      return (window as any).__NUXT__ !== undefined
-    }, { timeout: timeouts.page.pageLoad })
+    await page.waitForFunction('window.__NUXT__ !== undefined', { timeout: timeouts.page.pageLoad })
   }
   catch {
     console.warn(`__NUXT__ check timed out for URL: ${url}. Continuing anyway.`)
@@ -47,7 +45,7 @@ export async function navigateViaSidebar(page: Page, itemName: string | RegExp) 
 export async function scrollToSection(page: Page, headingText: string | RegExp) {
   const heading = page.getByRole('heading', { name: headingText })
   await heading.waitFor({ state: 'visible', timeout: timeouts.ui.elementVisible })
-  await heading.evaluate((element: HTMLElement) => {
+  await heading.evaluate(element => {
     element.scrollIntoView({ block: 'center', behavior: 'instant' })
   })
 }
@@ -55,7 +53,7 @@ export async function scrollToSection(page: Page, headingText: string | RegExp) 
 export async function scrollToText(page: Page, text: string | RegExp) {
   const textElement = page.getByText(text).first()
   await textElement.waitFor({ state: 'visible', timeout: timeouts.ui.elementVisible })
-  await textElement.evaluate((element: HTMLElement) => {
+  await textElement.evaluate(element => {
     element.scrollIntoView({ block: 'center', behavior: 'instant' })
   })
 }

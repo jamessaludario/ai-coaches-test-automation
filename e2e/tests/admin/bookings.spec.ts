@@ -1,5 +1,5 @@
 import { adminSelectors, timeouts } from '../../constants'
-import { cleanupAuthFile, expect, test } from '../../fixtures'
+import { expect, test } from '../../fixtures'
 import { AdminBookingsPage } from '../../page-objects/admin/bookings.page'
 
 test.describe('Admin Bookings Page', () => {
@@ -12,9 +12,7 @@ test.describe('Admin Bookings Page', () => {
   })
 
   // eslint-disable-next-line no-empty-pattern
-  test.afterAll(async ({}, testInfo) => {
-    await cleanupAuthFile('admin', testInfo.workerIndex)
-  })
+  
 
   test('display bookings page with data table', async () => {
     await expect(bookingsPage.heading).toBeVisible()

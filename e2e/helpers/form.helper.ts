@@ -99,7 +99,7 @@ export function getLoadingIndicators(page: Page): Locator[] {
   ]
 }
 
-export async function waitForLoadingHidden(page: Page, timeout = timeouts.ui.elementHidden) {
+export async function waitForLoadingHidden(page: Page, timeout: number) {
   const indicators = getLoadingIndicators(page)
   for (const indicator of indicators) {
     try {
@@ -112,7 +112,7 @@ export async function waitForLoadingHidden(page: Page, timeout = timeouts.ui.ele
   }
 }
 
-export async function waitForCardsToRefresh(page: Page, selector: string, timeout = timeouts.api.cardLoad) {
+export async function waitForCardsToRefresh(page: Page, selector: string, timeout: number) {
   try {
     await page.locator(selector).first().waitFor({ state: 'visible', timeout })
   }

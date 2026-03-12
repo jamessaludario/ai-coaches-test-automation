@@ -1,5 +1,5 @@
 import { dashboardContent, timeouts } from '../../constants'
-import { cleanupAuthFile, expect, test } from '../../fixtures'
+import { expect, test } from '../../fixtures'
 import { ClientDashboardPage } from '../../page-objects/client/dashboard.page'
 
 test.describe('Client Dashboard', () => {
@@ -12,9 +12,7 @@ test.describe('Client Dashboard', () => {
   })
 
   // eslint-disable-next-line no-empty-pattern
-  test.afterAll(async ({}, testInfo) => {
-    cleanupAuthFile('client', testInfo.workerIndex)
-  })
+  
 
   test('display dashboard content', async ({ authenticatedClientPage }) => {
     await expect(dashboard.dashboardHeading).toBeVisible({ timeout: timeouts.page.pageLoad })

@@ -18,4 +18,10 @@ export class ClientBookingsPage extends BasePage {
     await this.page.keyboard.press('Enter')
     await waitForDataTableLoad(this.page, query)
   }
+
+  async navigatetoBookingDetail(workshopScheduleName: string) {
+    await this.searchBookings(workshopScheduleName)
+    await this.dataTableRows.first().getByRole('link').click()
+    await waitForDataTableLoad(this.page, workshopScheduleName)
+  }
 }

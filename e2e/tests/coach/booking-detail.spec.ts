@@ -1,5 +1,5 @@
 import { timeouts } from '../../constants'
-import { cleanupAuthFile, expect, test } from '../../fixtures'
+import { expect, test } from '../../fixtures'
 import { getFirstDataTableCellText } from '../../helpers'
 import { CoachBookingDetailPage } from '../../page-objects/coach/booking-detail.page'
 import { CoachDashboardPage } from '../../page-objects/coach/dashboard.page'
@@ -17,9 +17,7 @@ test.describe('Coach Booking Details', () => {
   })
 
   // eslint-disable-next-line no-empty-pattern
-  test.afterAll(async ({}, testInfo) => {
-    await cleanupAuthFile('coach', testInfo.workerIndex)
-  })
+  
 
   test('display booking information', async ({ authenticatedCoachPage }) => {
     if (!firstBookingId) { test.skip(true, 'No bookings available'); return }
